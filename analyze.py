@@ -2,9 +2,13 @@ from azure.cognitiveservices.vision.computervision import ComputerVisionClient
 from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.computervision.models import OperationStatusCodes
 import time
+import json 
 
-endpoint = "ENTER ENDPOINT HERE"
-key = "ENTER KEY HERE"
+with open("api_creds.json") as config_file:
+    config = json.load(config_file)
+    
+    key = config['VISION_KEY']
+    endpoint = config['VISION_ENDPOINT']
 
 credentials = CognitiveServicesCredentials(key)
 
@@ -43,6 +47,7 @@ def read_image(uri):
         return "max retries reached"
 
     if result.status == OperationStatusCodes.succeeded:
+        print(result.analyze_result.read_results[0].lines)
         res_text = " ".join([line.text for line in result.analyze_result.read_results[0].lines])
         return res_text
     else:
